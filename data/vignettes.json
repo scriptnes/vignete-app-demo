@@ -1,5 +1,5 @@
 [
-    { "country": "Austria", "vehicle": "Car", "period": "Two months", "price": 28.90 },
+    { "country": "Austria", "vehicle": "Car", "period": "60-DAY", "price": 28.90 },
     { "country": "Austria", "vehicle": "Car", "period": "10-DAY", "price": 11.50 },
     { "country": "Hungary", "vehicle": "Car", "period": "30-DAY", "price": 26.40 },
     { "country": "Hungary", "vehicle": "Car", "period": "10-DAY", "price": 16.31 },

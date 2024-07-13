@@ -6,38 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
     <script src="https://unpkg.com/vuejs-datepicker"></script>
-    <link
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="./style.css" />
-    <style>
-      .datepicker-popup {
-        position: absolute;
-        bottom: 100%;
-        left: 0;
-        z-index: 1000;
-      }
-      .table-responsive {
-        overflow-x: auto;
-      }
-      .spinner-border {
-        display: block;
-        margin: 100px auto;
-      }
-    </style>
   </head>
   <body>
     <div id="app" class="container mt-5">
       <h1 class="mb-4">Vignette App</h1>
-      
+
       <div v-if="loading" class="spinner-border text-primary" role="status">
         <span class="sr-only">Loading...</span>
       </div>
-      
+
       <div v-else>
         <div class="table-responsive">
           <table class="table table-bordered">
@@ -113,14 +95,24 @@
           <strong>Total Price: {{ totalPrice.toFixed(2) }} €</strong>
         </div>
         <div class="alert alert-secondary">
-          <strong>Reference Number: <span @click="showModal" style="cursor: pointer;">{{ lastReferenceNumber }}</span></strong>
+          <strong
+            >Reference Number: <span @click="showModal" style="cursor: pointer">{{ lastReferenceNumber }}</span></strong
+          >
         </div>
-        <div class="mb-3">
-          <h5>Select Start Date</h5>
-          <vuejs-datepicker :value="startDate" @input="updateStartDate" calendar-class="datepicker-popup"></vuejs-datepicker>
-        </div>
-        <div class="d-flex justify-content-end">
-          <button class="btn btn-primary mt-3" @click="showModal" :disabled="!orders.length">Review Order</button>
+        
+        <div class="row mb-3 align-items-center">
+          <div class="col-md-6">
+            <h5>Select Start Date</h5>
+            <vuejs-datepicker
+              :value="startDate"
+              @input="updateStartDate"
+              :disabled-dates="disabledDates"
+              calendar-class="datepicker-popup"
+            ></vuejs-datepicker>
+          </div>
+          <div class="col-md-6 text-right">
+            <button class="btn btn-primary mt-3" @click="showModal" :disabled="!orders.length">Review Order</button>
+          </div>
         </div>
 
         <!-- Modal -->
@@ -130,7 +122,9 @@
               <div class="modal-header">
                 <div>
                   <h5 class="modal-title" id="orderModalLabel">Order Details</h5>
-                  <small class="text-muted">Reference Number: <span class="reference-number">{{ lastReferenceNumber }}</span></small>
+                  <small class="text-muted"
+                    >Reference Number: <span class="reference-number">{{ lastReferenceNumber }}</span></small
+                  >
                 </div>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
@@ -165,19 +159,19 @@
       </div>
     </div>
     <script>
-      Vue.component('vuejs-datepicker', vuejsDatepicker);
+      Vue.component("vuejs-datepicker", vuejsDatepicker);
 
       new Vue({
         el: "#app",
         data: {
           vignettes: [],
           orders: [],
-          sortKey: 'country',
+          sortKey: "country",
           sortOrder: 1,
-          lastReferenceNumber: '',
+          lastReferenceNumber: "",
           startDate: new Date(),
           percentageIncrease: 0,
-          loading: true 
+          loading: true,
         },
         created() {
           this.fetchConfig();
@@ -203,31 +197,37 @@
           },
           formattedStartDate() {
             return this.startDate.toLocaleDateString();
-          }
+          },
+          disabledDates() {
+            const today = new Date();
+            return {
+              to: today,
+            };
+          },
         },
         methods: {
           fetchConfig() {
-            fetch('config/config.json')
-              .then(response => response.json())
-              .then(data => {
+            fetch("config/config.json")
+              .then((response) => response.json())
+              .then((data) => {
                 this.percentageIncrease = data.percentageIncrease;
                 this.adjustPrices();
               });
           },
           fetchVignettes() {
-            fetch('data/vignettes.json')
-              .then(response => response.json())
-              .then(data => {
+            fetch("data/vignettes.json")
+              .then((response) => response.json())
+              .then((data) => {
                 this.vignettes = data;
                 this.adjustPrices();
-                this.loading = false; 
+                this.loading = false;
               });
           },
           adjustPrices() {
             const percentageIncrease = Number(this.percentageIncrease);
-          
-            this.vignettes.forEach(vignette => {
-              vignette.price *= (1 + percentageIncrease / 100);
+
+            this.vignettes.forEach((vignette) => {
+              vignette.price *= 1 + percentageIncrease / 100;
             });
           },
           sortBy(key) {
@@ -239,15 +239,13 @@
             this.sortKey = key;
           },
           getRowClass(vignette) {
-            if (vignette.vehicle === "Car") {
-              return vignette.period.includes("month")
-                ? "bg-primary text-white"
-                : "bg-info text-white";
-            } else {
-              return vignette.period.includes("month")
-                ? "bg-warning text-dark"
-                : "bg-danger text-white";
-            }
+            const countryColors = {
+              Austria: "bg-primary text-white",
+              Hungary: "bg-info text-white",
+              Romania: "bg-warning text-dark",
+              Bulgaria: "bg-danger text-white"
+            };
+            return countryColors[vignette.country] || "";
           },
           toggleOrder(vignette) {
             const index = this.orders.findIndex(
@@ -266,7 +264,7 @@
             const index = this.orders.findIndex((o) => o.id === order.id);
             if (index !== -1) {
               this.orders.splice(index, 1);
-              this.lastReferenceNumber = this.generateOrderId(); 
+              this.lastReferenceNumber = this.generateOrderId();
             }
           },
           generateOrderId() {
@@ -290,14 +288,13 @@
             );
           },
           showModal() {
-            $('#orderModal').modal('show');
+            $("#orderModal").modal("show");
           },
           updateStartDate(date) {
             this.startDate = date;
-          }
+          },
         },
       });
     </script>
-   
   </body>
 </html>
