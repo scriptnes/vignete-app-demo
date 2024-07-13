@@ -1,0 +1,19 @@
+[
+    { "country": "Austria", "vehicle": "Car", "period": "Two months", "price": 30 },
+    { "country": "Austria", "vehicle": "Car", "period": "Ten days", "price": 10 },
+    { "country": "Austria", "vehicle": "Bus", "period": "Two months", "price": 50 },
+    { "country": "Austria", "vehicle": "Bus", "period": "Ten days", "price": 20 },
+    { "country": "Hungary", "vehicle": "Car", "period": "Monthly", "price": 25 },
+    { "country": "Hungary", "vehicle": "Car", "period": "Weekly", "price": 15 },
+    { "country": "Hungary", "vehicle": "Bus", "period": "Monthly", "price": 45 },
+    { "country": "Hungary", "vehicle": "Bus", "period": "Weekly", "price": 25 },
+    { "country": "Romania", "vehicle": "Car", "period": "Monthly", "price": 20 },
+    { "country": "Romania", "vehicle": "Car", "period": "Weekly", "price": 12 },
+    { "country": "Romania", "vehicle": "Bus", "period": "Monthly", "price": 40 },
+    { "country": "Romania", "vehicle": "Bus", "period": "Weekly", "price": 22 },
+    { "country": "Bulgaria", "vehicle": "Car", "period": "Monthly", "price": 18 },
+    { "country": "Bulgaria", "vehicle": "Car", "period": "Weekly", "price": 10 },
+    { "country": "Bulgaria", "vehicle": "Bus", "period": "Monthly", "price": 35 },
+    { "country": "Bulgaria", "vehicle": "Bus", "period": "Weekly", "price": 20 }
+  ]
+  

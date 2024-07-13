@@ -24,129 +24,140 @@
       .table-responsive {
         overflow-x: auto;
       }
+      .spinner-border {
+        display: block;
+        margin: 100px auto;
+      }
     </style>
   </head>
   <body>
     <div id="app" class="container mt-5">
       <h1 class="mb-4">Vignette App</h1>
-      <div class="table-responsive">
-        <table class="table table-bordered">
-          <thead>
-            <tr>
-              <th @click="sortBy('country')">
-                Country
-                <span v-if="sortKey === 'country'">
-                  <span v-if="sortOrder === 1">▲</span>
-                  <span v-else>▼</span>
-                </span>
-              </th>
-              <th @click="sortBy('vehicle')">
-                Vehicle Type
-                <span v-if="sortKey === 'vehicle'">
-                  <span v-if="sortOrder === 1">▲</span>
-                  <span v-else>▼</span>
-                </span>
-              </th>
-              <th @click="sortBy('period')">
-                Period
-                <span v-if="sortKey === 'period'">
-                  <span v-if="sortOrder === 1">▲</span>
-                  <span v-else>▼</span>
-                </span>
-              </th>
-              <th @click="sortBy('price')">
-                Price
-                <span v-if="sortKey === 'price'">
-                  <span v-if="sortOrder === 1">▲</span>
-                  <span v-else>▼</span>
-                </span>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="(vignette, index) in sortedVignettes"
-              :key="index"
-              :class="getRowClass(vignette)"
-              @click="toggleOrder(vignette)"
-              v-show="!isSelected(vignette)"
-            >
-              <td>
-                <img :src="getFlag(vignette.country)" alt="" class="flag-icon" />
-                {{ vignette.country }}
-              </td>
-              <td>{{ vignette.vehicle }}</td>
-              <td>{{ vignette.period }}</td>
-              <td>{{ vignette.price.toFixed(2) }} €</td>
-            </tr>
-          </tbody>
-        </table>
+      
+      <div v-if="loading" class="spinner-border text-primary" role="status">
+        <span class="sr-only">Loading...</span>
       </div>
-      <h2 class="mt-4">Order List</h2>
-      <div class="card mb-3" v-if="orders.length">
-        <div class="card-body">
-          <h5 class="card-title">Orders</h5>
-          <ul class="list-group">
-            <li
-              class="list-group-item d-flex justify-content-between align-items-center"
-              v-for="(order, index) in orders"
-              :key="order.id"
-              @click="removeOrder(order)"
-            >
-              {{ order.country }} - {{ order.vehicle }} - {{ order.period }}
-              <span class="badge badge-primary badge-pill">{{ order.price.toFixed(2) }} €</span>
-            </li>
-          </ul>
+      
+      <div v-else>
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th @click="sortBy('country')">
+                  Country
+                  <span v-if="sortKey === 'country'">
+                    <span v-if="sortOrder === 1">▲</span>
+                    <span v-else>▼</span>
+                  </span>
+                </th>
+                <th @click="sortBy('vehicle')">
+                  Vehicle Type
+                  <span v-if="sortKey === 'vehicle'">
+                    <span v-if="sortOrder === 1">▲</span>
+                    <span v-else>▼</span>
+                  </span>
+                </th>
+                <th @click="sortBy('period')">
+                  Period
+                  <span v-if="sortKey === 'period'">
+                    <span v-if="sortOrder === 1">▲</span>
+                    <span v-else>▼</span>
+                  </span>
+                </th>
+                <th @click="sortBy('price')">
+                  Price
+                  <span v-if="sortKey === 'price'">
+                    <span v-if="sortOrder === 1">▲</span>
+                    <span v-else>▼</span>
+                  </span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="(vignette, index) in sortedVignettes"
+                :key="index"
+                :class="getRowClass(vignette)"
+                @click="toggleOrder(vignette)"
+                v-show="!isSelected(vignette)"
+              >
+                <td>
+                  <img :src="getFlag(vignette.country)" alt="" class="flag-icon" />
+                  {{ vignette.country }}
+                </td>
+                <td>{{ vignette.vehicle }}</td>
+                <td>{{ vignette.period }}</td>
+                <td>{{ vignette.price.toFixed(2) }} €</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-      </div>
-      <div class="alert alert-info" v-if="orders.length">
-        <strong>Total Price: {{ totalPrice.toFixed(2) }} €</strong>
-      </div>
-      <div class="alert alert-secondary">
-        <strong>Reference Number: <span @click="showModal" style="cursor: pointer;">{{ lastReferenceNumber }}</span></strong>
-      </div>
-      <div class="mb-3">
-        <h5>Select Start Date</h5>
-        <vuejs-datepicker :value="startDate" @input="updateStartDate" calendar-class="datepicker-popup"></vuejs-datepicker>
-      </div>
-      <div class="d-flex justify-content-end">
-        <button class="btn btn-primary mt-3" @click="showModal" :disabled="!orders.length">Review Order</button>
-      </div>
+        <h2 class="mt-4">Order List</h2>
+        <div class="card mb-3" v-if="orders.length">
+          <div class="card-body">
+            <h5 class="card-title">Orders</h5>
+            <ul class="list-group">
+              <li
+                class="list-group-item d-flex justify-content-between align-items-center"
+                v-for="(order, index) in orders"
+                :key="order.id"
+                @click="removeOrder(order)"
+              >
+                {{ order.country }} - {{ order.vehicle }} - {{ order.period }}
+                <span class="badge badge-primary badge-pill">{{ order.price.toFixed(2) }} €</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="alert alert-info" v-if="orders.length">
+          <strong>Total Price: {{ totalPrice.toFixed(2) }} €</strong>
+        </div>
+        <div class="alert alert-secondary">
+          <strong>Reference Number: <span @click="showModal" style="cursor: pointer;">{{ lastReferenceNumber }}</span></strong>
+        </div>
+        <div class="mb-3">
+          <h5>Select Start Date</h5>
+          <vuejs-datepicker :value="startDate" @input="updateStartDate" calendar-class="datepicker-popup"></vuejs-datepicker>
+        </div>
+        <div class="d-flex justify-content-end">
+          <button class="btn btn-primary mt-3" @click="showModal" :disabled="!orders.length">Review Order</button>
+        </div>
 
-      <!-- Modal -->
-      <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <div>
-                <h5 class="modal-title" id="orderModalLabel">Order Details</h5>
-                <small class="text-muted">Reference Number: <span class="reference-number">{{ lastReferenceNumber }}</span></small>
-              </div>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <div class="card mb-3">
-                <div class="card-body">
-                  <h5 class="card-title">Orders</h5>
-                  <ul class="list-group">
-                    <li
-                      class="list-group-item d-flex justify-content-between align-items-center"
-                      v-for="(order, index) in orders"
-                      :key="order.id"
-                    >
-                      {{ order.country }} - {{ order.vehicle }} - {{ order.period }}
-                      <span class="badge badge-primary badge-pill">{{ order.price.toFixed(2) }} €</span>
-                    </li>
-                  </ul>
+        <!-- Modal -->
+        <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <div>
+                  <h5 class="modal-title" id="orderModalLabel">Order Details</h5>
+                  <small class="text-muted">Reference Number: <span class="reference-number">{{ lastReferenceNumber }}</span></small>
                 </div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
               </div>
-              <div class="alert alert-info">
-                <strong>Total Price: {{ totalPrice.toFixed(2) }} €</strong>
-              </div>
-              <div class="alert alert-secondary">
-                <strong>Start Date: {{ formattedStartDate }}</strong>
+              <div class="modal-body">
+                <div class="card mb-3">
+                  <div class="card-body">
+                    <h5 class="card-title">Orders</h5>
+                    <ul class="list-group">
+                      <li
+                        class="list-group-item d-flex justify-content-between align-items-center"
+                        v-for="(order, index) in orders"
+                        :key="order.id"
+                      >
+                        {{ order.country }} - {{ order.vehicle }} - {{ order.period }}
+                        <span class="badge badge-primary badge-pill">{{ order.price.toFixed(2) }} €</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="alert alert-info">
+                  <strong>Total Price: {{ totalPrice.toFixed(2) }} €</strong>
+                </div>
+                <div class="alert alert-secondary">
+                  <strong>Start Date: {{ formattedStartDate }}</strong>
+                </div>
               </div>
             </div>
           </div>
@@ -159,33 +170,18 @@
       new Vue({
         el: "#app",
         data: {
-          vignettes: [
-            { country: "Austria", vehicle: "Car", period: "Two months", price: 30 },
-            { country: "Austria", vehicle: "Car", period: "Ten days", price: 10 },
-            { country: "Austria", vehicle: "Bus", period: "Two months", price: 50 },
-            { country: "Austria", vehicle: "Bus", period: "Ten days", price: 20 },
-            { country: "Hungary", vehicle: "Car", period: "Monthly", price: 25 },
-            { country: "Hungary", vehicle: "Car", period: "Weekly", price: 15 },
-            { country: "Hungary", vehicle: "Bus", period: "Monthly", price: 45 },
-            { country: "Hungary", vehicle: "Bus", period: "Weekly", price: 25 },
-            { country: "Romania", vehicle: "Car", period: "Monthly", price: 20 },
-            { country: "Romania", vehicle: "Car", period: "Weekly", price: 12 },
-            { country: "Romania", vehicle: "Bus", period: "Monthly", price: 40 },
-            { country: "Romania", vehicle: "Bus", period: "Weekly", price: 22 },
-            { country: "Bulgaria", vehicle: "Car", period: "Monthly", price: 18 },
-            { country: "Bulgaria", vehicle: "Car", period: "Weekly", price: 10 },
-            { country: "Bulgaria", vehicle: "Bus", period: "Monthly", price: 35 },
-            { country: "Bulgaria", vehicle: "Bus", period: "Weekly", price: 20 },
-          ],
+          vignettes: [],
           orders: [],
           sortKey: 'country',
           sortOrder: 1,
           lastReferenceNumber: '',
           startDate: new Date(),
-          percentageIncrease: 0, 
+          percentageIncrease: 0,
+          loading: true 
         },
         created() {
           this.fetchConfig();
+          this.fetchVignettes();
         },
         computed: {
           sortedVignettes() {
@@ -216,6 +212,15 @@
               .then(data => {
                 this.percentageIncrease = data.percentageIncrease;
                 this.adjustPrices();
+              });
+          },
+          fetchVignettes() {
+            fetch('data/vignettes.json')
+              .then(response => response.json())
+              .then(data => {
+                this.vignettes = data;
+                this.adjustPrices();
+                this.loading = false; 
               });
           },
           adjustPrices() {
@@ -261,9 +266,7 @@
             const index = this.orders.findIndex((o) => o.id === order.id);
             if (index !== -1) {
               this.orders.splice(index, 1);
-              this.lastReferenceNumber = this.orders.length
-                ? this.orders[this.orders.length - 1].id
-                : '';
+              this.lastReferenceNumber = this.generateOrderId(); 
             }
           },
           generateOrderId() {
@@ -295,6 +298,6 @@
         },
       });
     </script>
-    
+   
   </body>
 </html>
