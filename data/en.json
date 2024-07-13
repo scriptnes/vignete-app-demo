@@ -1,0 +1,16 @@
+{
+    "appTitle": "Vignette App",
+    "country": "Country",
+    "vehicleType": "Vehicle Type",
+    "period": "Period",
+    "price": "Price",
+    "orderList": "Order List",
+    "orders": "Orders",
+    "totalPrice": "Total Price",
+    "referenceNumber": "Reference Number",
+    "selectStartDate": "Select Start Date",
+    "reviewOrder": "Review Order",
+    "orderDetails": "Order Details",
+    "startDate": "Start Date"
+  }
+  

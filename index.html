@@ -15,7 +15,6 @@
   </head>
   <body>
     <div id="app" class="container mt-5">
-      <!-- Add a language switcher -->
       <div class="mb-3">
         <label for="languageSwitcher">Language:</label>
         <select id="languageSwitcher" v-model="currentLanguage" @change="switchLanguage">
@@ -24,9 +23,11 @@
         </select>
       </div>
       <h1 class="mb-4">{{ $t('appTitle') }}</h1>
+
       <div v-if="loading" class="spinner-border text-primary" role="status">
         <span class="sr-only">Loading...</span>
       </div>
+
       <div v-else>
         <div class="table-responsive">
           <table class="table table-bordered">
@@ -106,6 +107,7 @@
             >{{ $t('referenceNumber') }}: <span @click="showModal" style="cursor: pointer">{{ lastReferenceNumber }}</span></strong
           >
         </div>
+        
         <div class="row mb-3 align-items-center">
           <div class="col-md-6">
             <h5>{{ $t('selectStartDate') }}</h5>
@@ -120,6 +122,7 @@
             <button class="btn btn-primary mt-3" @click="showModal" :disabled="!orders.length">{{ $t('reviewOrder') }}</button>
           </div>
         </div>
+
         <!-- Modal -->
         <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalLabel" aria-hidden="true">
           <div class="modal-dialog">
@@ -166,153 +169,158 @@
     <script>
       Vue.component("vuejs-datepicker", vuejsDatepicker);
 
-      const i18n = new VueI18n({
-        locale: 'en', // set locale
-        fallbackLocale: 'en', // set fallback locale
-        messages: {
-          en: fetch('path_to_en.json').then(response => response.json()),
-          bg: fetch('path_to_bg.json').then(response => response.json())
-        }
-      });
+      async function loadMessages() {
+        const en = await fetch('data/en.json').then(response => response.json());
+        const bg = await fetch('data/bg.json').then(response => response.json());
+        return { en, bg };
+      }
 
-      new Vue({
-        el: "#app",
-        i18n,
-        data: {
-          vignettes: [],
-          orders: [],
-          sortKey: "country",
-          sortOrder: 1,
-          lastReferenceNumber: "",
-          startDate: new Date(),
-          percentageIncrease: 0,
-          loading: true,
-          currentLanguage: 'en' // default language
-        },
-        created() {
-          this.fetchConfig();
-          this.fetchVignettes();
-        },
-        computed: {
-          sortedVignettes() {
-            return this.vignettes.sort((a, b) => {
-              if (a[this.sortKey] > b[this.sortKey]) {
-                return 1 * this.sortOrder;
-              } else if (a[this.sortKey] < b[this.sortKey]) {
-                return -1 * this.sortOrder;
+      loadMessages().then(messages => {
+        const i18n = new VueI18n({
+          locale: 'en', 
+          fallbackLocale: 'en', 
+          messages
+        });
+
+        new Vue({
+          el: "#app",
+          i18n,
+          data: {
+            vignettes: [],
+            orders: [],
+            sortKey: "country",
+            sortOrder: 1,
+            lastReferenceNumber: "",
+            startDate: new Date(),
+            percentageIncrease: 0,
+            loading: true,
+            currentLanguage: 'en' 
+          },
+          created() {
+            this.fetchConfig();
+            this.fetchVignettes();
+          },
+          computed: {
+            sortedVignettes() {
+              return this.vignettes.sort((a, b) => {
+                if (a[this.sortKey] > b[this.sortKey]) {
+                  return 1 * this.sortOrder;
+                } else if (a[this.sortKey] < b[this.sortKey]) {
+                  return -1 * this.sortOrder;
+                } else {
+                  return 0;
+                }
+              });
+            },
+            totalPrice() {
+              return this.orders.reduce((total, order) => total + order.price, 0);
+            },
+            adjustedTotalPrice() {
+              return this.totalPrice;
+            },
+            formattedStartDate() {
+              return this.startDate.toLocaleDateString();
+            },
+            disabledDates() {
+              const today = new Date();
+              return {
+                to: today,
+              };
+            },
+          },
+          methods: {
+            fetchConfig() {
+              fetch("config/config.json")
+                .then((response) => response.json())
+                .then((data) => {
+                  this.percentageIncrease = data.percentageIncrease;
+                  this.adjustPrices();
+                });
+            },
+            fetchVignettes() {
+              fetch("data/vignettes.json")
+                .then((response) => response.json())
+                .then((data) => {
+                  this.vignettes = data;
+                  this.adjustPrices();
+                  this.loading = false;
+                });
+            },
+            adjustPrices() {
+              const percentageIncrease = Number(this.percentageIncrease);
+
+              this.vignettes.forEach((vignette) => {
+                vignette.price *= 1 + percentageIncrease / 100;
+              });
+            },
+            sortBy(key) {
+              if (this.sortKey === key) {
+                this.sortOrder *= -1;
               } else {
-                return 0;
+                this.sortOrder = 1;
               }
-            });
-          },
-          totalPrice() {
-            return this.orders.reduce((total, order) => total + order.price, 0);
-          },
-          adjustedTotalPrice() {
-            return this.totalPrice;
-          },
-          formattedStartDate() {
-            return this.startDate.toLocaleDateString();
-          },
-          disabledDates() {
-            const today = new Date();
-            return {
-              to: today,
-            };
-          },
-        },
-        methods: {
-          fetchConfig() {
-            fetch("config/config.json")
-              .then((response) => response.json())
-              .then((data) => {
-                this.percentageIncrease = data.percentageIncrease;
-                this.adjustPrices();
-              });
-          },
-          fetchVignettes() {
-            fetch("data/vignettes.json")
-              .then((response) => response.json())
-              .then((data) => {
-                this.vignettes = data;
-                this.adjustPrices();
-                this.loading = false;
-              });
-          },
-          adjustPrices() {
-            const percentageIncrease = Number(this.percentageIncrease);
-
-            this.vignettes.forEach((vignette) => {
-              vignette.price *= 1 + percentageIncrease / 100;
-            });
-          },
-          sortBy(key) {
-            if (this.sortKey === key) {
-              this.sortOrder *= -1;
-            } else {
-              this.sortOrder = 1;
-            }
-            this.sortKey = key;
-          },
-          getRowClass(vignette) {
-            const countryColors = {
-              Austria: "bg-primary text-white",
-              Hungary: "bg-info text-white",
-              Romania: "bg-warning text-dark",
-              Bulgaria: "bg-danger text-white"
-            };
-            return countryColors[vignette.country] || "";
-          },
-          toggleOrder(vignette) {
-            const index = this.orders.findIndex(
-              (order) =>
-                order.country === vignette.country &&
-                order.vehicle === vignette.vehicle &&
-                order.period === vignette.period
-            );
-            if (index === -1) {
-              const orderId = this.generateOrderId();
-              this.orders.push({ ...vignette, id: orderId });
-              this.lastReferenceNumber = orderId;
+              this.sortKey = key;
+            },
+            getRowClass(vignette) {
+              const countryColors = {
+                Austria: "bg-primary text-white",
+                Hungary: "bg-info text-white",
+                Romania: "bg-warning text-dark",
+                Bulgaria: "bg-danger text-white"
+              };
+              return countryColors[vignette.country] || "";
+            },
+            toggleOrder(vignette) {
+              const index = this.orders.findIndex(
+                (order) =>
+                  order.country === vignette.country &&
+                  order.vehicle === vignette.vehicle &&
+                  order.period === vignette.period
+              );
+              if (index === -1) {
+                const orderId = this.generateOrderId();
+                this.orders.push({ ...vignette, id: orderId });
+                this.lastReferenceNumber = orderId;
+              }
+            },
+            removeOrder(order) {
+              const index = this.orders.findIndex((o) => o.id === order.id);
+              if (index !== -1) {
+                this.orders.splice(index, 1);
+                this.lastReferenceNumber = this.generateOrderId();
+              }
+            },
+            generateOrderId() {
+              return Math.random().toString().substring(2, 14);
+            },
+            getFlag(country) {
+              const flags = {
+                Austria: "https://flagcdn.com/w40/at.png",
+                Hungary: "https://flagcdn.com/w40/hu.png",
+                Romania: "https://flagcdn.com/w40/ro.png",
+                Bulgaria: "https://flagcdn.com/w40/bg.png",
+              };
+              return flags[country] || "";
+            },
+            isSelected(vignette) {
+              return this.orders.some(
+                (order) =>
+                  order.country === vignette.country &&
+                  order.vehicle === vignette.vehicle &&
+                  order.period === vignette.period
+              );
+            },
+            showModal() {
+              $("#orderModal").modal("show");
+            },
+            updateStartDate(date) {
+              this.startDate = date;
+            },
+            switchLanguage() {
+              this.$i18n.locale = this.currentLanguage;
             }
           },
-          removeOrder(order) {
-            const index = this.orders.findIndex((o) => o.id === order.id);
-            if (index !== -1) {
-              this.orders.splice(index, 1);
-              this.lastReferenceNumber = this.generateOrderId();
-            }
-          },
-          generateOrderId() {
-            return Math.random().toString().substring(2, 14);
-          },
-          getFlag(country) {
-            const flags = {
-              Austria: "https://flagcdn.com/w40/at.png",
-              Hungary: "https://flagcdn.com/w40/hu.png",
-              Romania: "https://flagcdn.com/w40/ro.png",
-              Bulgaria: "https://flagcdn.com/w40/bg.png",
-            };
-            return flags[country] || "";
-          },
-          isSelected(vignette) {
-            return this.orders.some(
-              (order) =>
-                order.country === vignette.country &&
-                order.vehicle === vignette.vehicle &&
-                order.period === vignette.period
-            );
-          },
-          showModal() {
-            $("#orderModal").modal("show");
-          },
-          updateStartDate(date) {
-            this.startDate = date;
-          },
-          switchLanguage() {
-            this.$i18n.locale = this.currentLanguage;
-          }
-        },
+        });
       });
     </script>
   </body>

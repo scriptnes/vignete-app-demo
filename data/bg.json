@@ -1,0 +1,16 @@
+{
+    "appTitle": "Приложение за Винетки",
+    "country": "Държава",
+    "vehicleType": "Тип МПС",
+    "period": "Период",
+    "price": "Цена",
+    "orderList": "Списък с Поръчки",
+    "orders": "Поръчки",
+    "totalPrice": "Обща Цена",
+    "referenceNumber": "Референционен Номер",
+    "selectStartDate": "Изберете Начална Дата",
+    "reviewOrder": "Преглед на Поръчката",
+    "orderDetails": "Детайли на Поръчката",
+    "startDate": "Начална Дата"
+  }
+  
