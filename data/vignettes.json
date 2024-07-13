@@ -1,15 +1,15 @@
 [
     { "country": "Austria", "vehicle": "Car", "period": "Two months", "price": 28.90 },
     { "country": "Austria", "vehicle": "Car", "period": "10-DAY", "price": 11.50 },
-    { "country": "Hungary", "vehicle": "Car", "period": "Monthly", "price": 26.40 },
-    { "country": "Hungary", "vehicle": "Car", "period": "Weekly (10-DAY)", "price": 16.31 },
+    { "country": "Hungary", "vehicle": "Car", "period": "30-DAY", "price": 26.40 },
+    { "country": "Hungary", "vehicle": "Car", "period": "10-DAY", "price": 16.31 },
     { "country": "Romania", "vehicle": "Car", "period": "10-DAY", "price": 3.30 },
     { "country": "Romania", "vehicle": "Car", "period": "30-DAY", "price": 5.30 },
     { "country": "Romania", "vehicle": "Car", "period": "60-DAY", "price": 8.40 },
     { "country": "Romania", "vehicle": "Bus <= 3.5t", "period": "10-DAY", "price": 11.50 },
     { "country": "Romania", "vehicle": "Bus <= 3.5t", "period": "30-DAY", "price": 18.20 },
     { "country": "Romania", "vehicle": "Bus <= 3.5t", "period": "60-DAY", "price": 28.80 },
-    { "country": "Bulgaria", "vehicle": "Car", "period": "Monthly", "price": 14.21 },
-    { "country": "Bulgaria", "vehicle": "Car", "period": "Weekly", "price": 6.85 }
+    { "country": "Bulgaria", "vehicle": "Car", "period": "30-DAY", "price": 14.21 },
+    { "country": "Bulgaria", "vehicle": "Car", "period": "7-DAY", "price": 6.85 }
   ]
   
