@@ -172,7 +172,6 @@
           lastReferenceNumber: '',
           startDate: new Date(),
           percentageIncrease: 0, 
-          secretKey: 0 
         },
         created() {
           this.fetchConfig();
@@ -205,23 +204,15 @@
               .then(response => response.json())
               .then(data => {
                 this.percentageIncrease = data.percentageIncrease;
-                this.secretKey = data.secretKey;
                 this.adjustPrices();
               });
           },
           adjustPrices() {
-            const hashedPercentage = this.simpleHash(this.percentageIncrease.toString(), this.secretKey);
+            const percentageIncrease = Number(this.percentageIncrease);
+          
             this.vignettes.forEach(vignette => {
-              vignette.price *= (1 + hashedPercentage / 100);
+              vignette.price *= (1 + percentageIncrease / 100);
             });
-          },
-          simpleHash(str, secret) {
-            let hash = 0;
-            for (let i = 0; i < str.length; i++) {
-              hash = (hash << 5) - hash + str.charCodeAt(i) + secret;
-              hash |= 0;
-            }
-            return Math.abs(hash % 100); 
           },
           sortBy(key) {
             if (this.sortKey === key) {
@@ -293,6 +284,17 @@
         },
       });
     </script>
-    
+    <script>
+      document.addEventListener('DOMContentLoaded', (event) => {
+        const uniqueParam = 'version=' + new Date().getTime();
+        document.querySelectorAll('a').forEach(link => {
+          const href = link.getAttribute('href');
+          // Проверка дали връзката е вътрешна и не съдържа вече параметър 'version'
+          if (href && !href.includes('version=')) {
+            link.setAttribute('href', href + (href.includes('?') ? '&' : '?') + uniqueParam);
+          }
+        });
+      });
+    </script>
   </body>
 </html>
