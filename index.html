@@ -11,7 +11,20 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="./style.css" />
+    <style>
+        .language-switcher {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+        .language-switcher label {
+            margin-bottom: 0;
+            margin-right: 10px;
+        }
+        .language-switcher select {
+            width: auto;
+        }
+    </style>
 </head>
 <body>
     <div id="app" class="container mt-5">
@@ -237,6 +250,7 @@
                     this.$i18n.setLocaleMessage("en", messages.en);
                     this.$i18n.setLocaleMessage("bg", messages.bg);
                     this.$i18n.setLocaleMessage("de", messages.de);
+                    this.$i18n.locale = this.currentLanguage;
                     this.languageLoading = false;
                 },
                 fetchConfig() {
