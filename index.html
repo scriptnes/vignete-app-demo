@@ -77,10 +77,10 @@
                 >
                   <td>
                     <img :src="getFlag(vignette.country)" alt="" class="flag-icon" />
-                    {{ vignette.country }}
+                    {{ translateContent('countries', vignette.country) }}
                   </td>
-                  <td>{{ vignette.vehicle }}</td>
-                  <td>{{ vignette.period }}</td>
+                  <td>{{ translateContent('vehicleTypes', vignette.vehicle) }}</td>
+                  <td>{{ translateContent('periods', vignette.period) }}</td>
                   <td>{{ vignette.price.toFixed(2) }} €</td>
                 </tr>
               </tbody>
@@ -97,7 +97,7 @@
                   :key="order.id"
                   @click="removeOrder(order)"
                 >
-                  {{ order.country }} - {{ order.vehicle }} - {{ order.period }}
+                  {{ translateContent('countries', order.country) }} - {{ translateContent('vehicleTypes', order.vehicle) }} - {{ translateContent('periods', order.period) }}
                   <span class="badge badge-primary badge-pill">{{ order.price.toFixed(2) }} €</span>
                 </li>
               </ul>
@@ -152,7 +152,7 @@
                           v-for="(order, index) in orders"
                           :key="order.id"
                         >
-                          {{ order.country }} - {{ order.vehicle }} - {{ order.period }}
+                          {{ translateContent('countries', order.country) }} - {{ translateContent('vehicleTypes', order.vehicle) }} - {{ translateContent('periods', order.period) }}
                           <span class="badge badge-primary badge-pill">{{ order.price.toFixed(2) }} €</span>
                         </li>
                       </ul>
@@ -186,7 +186,10 @@
           percentageIncrease: 0,
           loading: true,
           languageLoading: true,
-          currentLanguage: 'en'
+          currentLanguage: 'en',
+          vehicleTypeMap: {
+            'Bus <= 3.5t': 'Bus_le_3_5t'
+          }
         },
         async created() {
           await this.loadMessages();
@@ -319,6 +322,12 @@
           },
           switchLanguage() {
             this.$i18n.locale = this.currentLanguage;
+          },
+          translateContent(category, value) {
+            if (category === 'vehicleTypes' && this.vehicleTypeMap[value]) {
+              value = this.vehicleTypeMap[value];
+            }
+            return this.$t(`${category}.${value}`);
           }
         },
         i18n: new VueI18n({

@@ -7,10 +7,26 @@
     "orderList": "Списък с Поръчки",
     "orders": "Поръчки",
     "totalPrice": "Обща Цена",
-    "referenceNumber": "Референционен Номер",
+    "referenceNumber": "Референтен Номер",
     "selectStartDate": "Изберете Начална Дата",
     "reviewOrder": "Преглед на Поръчката",
     "orderDetails": "Детайли на Поръчката",
-    "startDate": "Начална Дата"
+    "startDate": "Начална Дата",
+    "countries": {
+      "Austria": "Австрия",
+      "Bulgaria": "България",
+      "Hungary": "Унгария",
+      "Romania": "Румъния"
+    },
+    "vehicleTypes": {
+      "Car": "Колa",
+      "Bus_le_3_5t": "Бус <= 3.5т"
+    },
+    "periods": {
+      "10-DAY": "10-ДНИ",
+      "30-DAY": "30-ДНИ",
+      "60-DAY": "60-ДНИ",
+      "7-DAY": "7-ДНИ"
+    }
   }
   

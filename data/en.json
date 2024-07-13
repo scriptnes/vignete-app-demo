@@ -11,6 +11,23 @@
     "selectStartDate": "Select Start Date",
     "reviewOrder": "Review Order",
     "orderDetails": "Order Details",
-    "startDate": "Start Date"
+    "startDate": "Start Date",
+    "countries": {
+      "Austria": "Austria",
+      "Bulgaria": "Bulgaria",
+      "Hungary": "Hungary",
+      "Romania": "Romania"
+    },
+    "vehicleTypes": {
+      "Car": "Car",
+      "Bus_le_3_5t": "Bus <= 3.5t"
+    },
+    "periods": {
+      "10-DAY": "10-DAY",
+      "30-DAY": "30-DAY",
+      "60-DAY": "60-DAY",
+      "7-DAY": "7-DAY"
+    }
   }
+  
   
