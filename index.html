@@ -14,6 +14,17 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="./style.css" />
+    <style>
+      .datepicker-popup {
+        position: absolute;
+        bottom: 100%;
+        left: 0;
+        z-index: 1000;
+      }
+      .table-responsive {
+        overflow-x: auto;
+      }
+    </style>
   </head>
   <body>
     <div id="app" class="container mt-5">
@@ -96,7 +107,7 @@
       </div>
       <div class="mb-3">
         <h5>Select Start Date</h5>
-        <vuejs-datepicker :value="startDate" @input="updateStartDate"></vuejs-datepicker>
+        <vuejs-datepicker :value="startDate" @input="updateStartDate" calendar-class="datepicker-popup"></vuejs-datepicker>
       </div>
       <div class="d-flex justify-content-end">
         <button class="btn btn-primary mt-3" @click="showModal" :disabled="!orders.length">Review Order</button>
@@ -284,17 +295,6 @@
         },
       });
     </script>
-    <script>
-      document.addEventListener('DOMContentLoaded', (event) => {
-        const uniqueParam = 'version=' + new Date().getTime();
-        document.querySelectorAll('a').forEach(link => {
-          const href = link.getAttribute('href');
-          // Проверка дали връзката е вътрешна и не съдържа вече параметър 'version'
-          if (href && !href.includes('version=')) {
-            link.setAttribute('href', href + (href.includes('?') ? '&' : '?') + uniqueParam);
-          }
-        });
-      });
-    </script>
+    
   </body>
 </html>
