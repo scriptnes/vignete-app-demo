@@ -24,6 +24,7 @@
           <select id="languageSwitcher" v-model="currentLanguage" @change="switchLanguage">
             <option value="en">English</option>
             <option value="bg">Bulgarian</option>
+            <option value="de">German</option>
           </select>
         </div>
         <h1 class="mb-4">{{ $t('appTitle') }}</h1>
@@ -97,7 +98,8 @@
                   :key="order.id"
                   @click="removeOrder(order)"
                 >
-                  {{ translateContent('countries', order.country) }} - {{ translateContent('vehicleTypes', order.vehicle) }} - {{ translateContent('periods', order.period) }}
+                  {{ translateContent('countries', order.country) }} - {{ translateContent('vehicleTypes',
+                  order.vehicle) }} - {{ translateContent('periods', order.period) }}
                   <span class="badge badge-primary badge-pill">{{ order.price.toFixed(2) }} €</span>
                 </li>
               </ul>
@@ -108,10 +110,11 @@
           </div>
           <div class="alert alert-secondary">
             <strong
-              >{{ $t('referenceNumber') }}: <span @click="showModal" style="cursor: pointer">{{ lastReferenceNumber }}</span></strong
+              >{{ $t('referenceNumber') }}:
+              <span @click="showModal" style="cursor: pointer">{{ lastReferenceNumber }}</span></strong
             >
           </div>
-          
+
           <div class="row mb-3 align-items-center">
             <div class="col-md-6">
               <h5>{{ $t('selectStartDate') }}</h5>
@@ -123,7 +126,9 @@
               ></vuejs-datepicker>
             </div>
             <div class="col-md-6 text-right">
-              <button class="btn btn-primary mt-3" @click="showModal" :disabled="!orders.length">{{ $t('reviewOrder') }}</button>
+              <button class="btn btn-primary mt-3" @click="showModal" :disabled="!orders.length">
+                {{ $t('reviewOrder') }}
+              </button>
             </div>
           </div>
 
@@ -135,7 +140,8 @@
                   <div>
                     <h5 class="modal-title" id="orderModalLabel">{{ $t('orderDetails') }}</h5>
                     <small class="text-muted"
-                      >{{ $t('referenceNumber') }}: <span class="reference-number">{{ lastReferenceNumber }}</span></small
+                      >{{ $t('referenceNumber') }}:
+                      <span class="reference-number">{{ lastReferenceNumber }}</span></small
                     >
                   </div>
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -152,7 +158,8 @@
                           v-for="(order, index) in orders"
                           :key="order.id"
                         >
-                          {{ translateContent('countries', order.country) }} - {{ translateContent('vehicleTypes', order.vehicle) }} - {{ translateContent('periods', order.period) }}
+                          {{ translateContent('countries', order.country) }} - {{ translateContent('vehicleTypes',
+                          order.vehicle) }} - {{ translateContent('periods', order.period) }}
                           <span class="badge badge-primary badge-pill">{{ order.price.toFixed(2) }} €</span>
                         </li>
                       </ul>
@@ -186,10 +193,10 @@
           percentageIncrease: 0,
           loading: true,
           languageLoading: true,
-          currentLanguage: 'en',
+          currentLanguage: "en",
           vehicleTypeMap: {
-            'Bus <= 3.5t': 'Bus_le_3_5t'
-          }
+            "Bus <= 3.5t": "Bus_le_3_5t",
+          },
         },
         async created() {
           await this.loadMessages();
@@ -226,11 +233,13 @@
         },
         methods: {
           async loadMessages() {
-            const en = await fetch('data/en.json').then(response => response.json());
-            const bg = await fetch('data/bg.json').then(response => response.json());
-            const messages = { en, bg };
-            this.$i18n.setLocaleMessage('en', messages.en);
-            this.$i18n.setLocaleMessage('bg', messages.bg);
+            const en = await fetch("data/en.json").then((response) => response.json());
+            const bg = await fetch("data/bg.json").then((response) => response.json());
+            const de = await fetch("data/de.json").then((response) => response.json());
+            const messages = { en, bg, de };
+            this.$i18n.setLocaleMessage("en", messages.en);
+            this.$i18n.setLocaleMessage("bg", messages.bg);
+            this.$i18n.setLocaleMessage("de", messages.de);
             this.languageLoading = false;
           },
           fetchConfig() {
@@ -270,7 +279,7 @@
               Austria: "bg-primary text-white",
               Hungary: "bg-info text-white",
               Romania: "bg-warning text-dark",
-              Bulgaria: "bg-danger text-white"
+              Bulgaria: "bg-danger text-white",
             };
             return countryColors[vignette.country] || "";
           },
@@ -324,17 +333,21 @@
             this.$i18n.locale = this.currentLanguage;
           },
           translateContent(category, value) {
-            if (category === 'vehicleTypes' && this.vehicleTypeMap[value]) {
+            if (category === "vehicleTypes" && this.vehicleTypeMap[value]) {
               value = this.vehicleTypeMap[value];
             }
             return this.$t(`${category}.${value}`);
-          }
+          },
         },
         i18n: new VueI18n({
-          locale: 'en',
-          fallbackLocale: 'en',
-          messages: {}
-        })
+          locale: "en",
+          fallbackLocale: "en",
+          messages: {
+            en: {},
+            bg: {},
+            de: {},
+          },
+        }),
       });
     </script>
   </body>

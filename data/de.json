@@ -1,0 +1,31 @@
+{
+    "appTitle": "Vignetten-Anwendung",
+    "country": "Land",
+    "vehicleType": "Fahrzeugtyp",
+    "period": "Zeitraum",
+    "price": "Preis",
+    "orderList": "Bestellliste",
+    "orders": "Bestellungen",
+    "totalPrice": "Gesamtpreis",
+    "referenceNumber": "Referenznummer",
+    "selectStartDate": "Startdatum auswählen",
+    "reviewOrder": "Bestellung überprüfen",
+    "orderDetails": "Bestelldetails",
+    "startDate": "Startdatum",
+    "countries": {
+      "Austria": "Österreich",
+      "Bulgaria": "Bulgarien",
+      "Hungary": "Ungarn",
+      "Romania": "Rumänien"
+    },
+    "vehicleTypes": {
+      "Car": "Auto",
+      "Bus_le_3_5t": "Bus <= 3.5t"
+    },
+    "periods": {
+      "10-DAY": "10-TAGE",
+      "30-DAY": "30-TAGE",
+      "60-DAY": "60-TAGE",
+      "7-DAY": "7-TAGE"
+    }
+}
