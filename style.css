@@ -1,0 +1,34 @@
+.bg-primary {
+    background-color: #007bff !important;
+  }
+  .bg-info {
+    background-color: #17a2b8 !important;
+  }
+  .bg-warning {
+    background-color: #ffc107 !important;
+  }
+  .bg-danger {
+    background-color: #dc3545 !important;
+  }
+  th {
+    cursor: pointer;
+  }
+  .flag-icon {
+    width: 20px;
+    height: 15px;
+    margin-right: 5px;
+  }
+  .text-decoration-line-through {
+    text-decoration: line-through;
+  }
+  .modal-content {
+    background-color: #fff;
+    color: #000;
+  }
+  .reference-number {
+    font-style: italic;
+    color: #6c757d;
+  }
+  .card {
+    margin: 10px;
+  }

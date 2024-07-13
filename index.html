@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Vignette App</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="https://unpkg.com/vuejs-datepicker"></script>
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div id="app" class="container mt-5">
+      <h1 class="mb-4">Vignette App</h1>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th @click="sortBy('country')">
+              Country
+              <span v-if="sortKey === 'country'">
+                <span v-if="sortOrder === 1">▲</span>
+                <span v-else>▼</span>
+              </span>
+            </th>
+            <th @click="sortBy('vehicle')">
+              Vehicle Type
+              <span v-if="sortKey === 'vehicle'">
+                <span v-if="sortOrder === 1">▲</span>
+                <span v-else>▼</span>
+              </span>
+            </th>
+            <th @click="sortBy('period')">
+              Period
+              <span v-if="sortKey === 'period'">
+                <span v-if="sortOrder === 1">▲</span>
+                <span v-else>▼</span>
+              </span>
+            </th>
+            <th @click="sortBy('price')">
+              Price
+              <span v-if="sortKey === 'price'">
+                <span v-if="sortOrder === 1">▲</span>
+                <span v-else>▼</span>
+              </span>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="(vignette, index) in sortedVignettes"
+            :key="index"
+            :class="getRowClass(vignette)"
+            @click="toggleOrder(vignette)"
+            v-show="!isSelected(vignette)"
+          >
+            <td>
+              <img :src="getFlag(vignette.country)" alt="" class="flag-icon" />
+              {{ vignette.country }}
+            </td>
+            <td>{{ vignette.vehicle }}</td>
+            <td>{{ vignette.period }}</td>
+            <td>{{ vignette.price.toFixed(2) }} €</td>
+          </tr>
+        </tbody>
+      </table>
+      <h2 class="mt-4">Order List</h2>
+      <div class="card mb-3" v-if="orders.length">
+        <div class="card-body">
+          <h5 class="card-title">Orders</h5>
+          <ul class="list-group">
+            <li
+              class="list-group-item d-flex justify-content-between align-items-center"
+              v-for="(order, index) in orders"
+              :key="order.id"
+              @click="removeOrder(order)"
+            >
+              {{ order.country }} - {{ order.vehicle }} - {{ order.period }}
+              <span class="badge badge-primary badge-pill">{{ order.price.toFixed(2) }} €</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="alert alert-info" v-if="orders.length">
+        <strong>Total Price: {{ totalPrice.toFixed(2) }} €</strong>
+      </div>
+      <div class="alert alert-secondary">
+        <strong>Reference Number: <span @click="showModal" style="cursor: pointer;">{{ lastReferenceNumber }}</span></strong>
+      </div>
+      <div class="mb-3">
+        <h5>Select Start Date</h5>
+        <vuejs-datepicker :value="startDate" @input="updateStartDate"></vuejs-datepicker>
+      </div>
+      <div class="d-flex justify-content-end">
+        <button class="btn btn-primary mt-3" @click="showModal" :disabled="!orders.length">Review Order</button>
+      </div>
+
+      <!-- Modal -->
+      <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <div>
+                <h5 class="modal-title" id="orderModalLabel">Order Details</h5>
+                <small class="text-muted">Reference Number: <span class="reference-number">{{ lastReferenceNumber }}</span></small>
+              </div>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="card mb-3">
+                <div class="card-body">
+                  <h5 class="card-title">Orders</h5>
+                  <ul class="list-group">
+                    <li
+                      class="list-group-item d-flex justify-content-between align-items-center"
+                      v-for="(order, index) in orders"
+                      :key="order.id"
+                    >
+                      {{ order.country }} - {{ order.vehicle }} - {{ order.period }}
+                      <span class="badge badge-primary badge-pill">{{ order.price.toFixed(2) }} €</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="alert alert-info">
+                <strong>Total Price: {{ totalPrice.toFixed(2) }} €</strong>
+              </div>
+              <div class="alert alert-secondary">
+                <strong>Start Date: {{ formattedStartDate }}</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      Vue.component('vuejs-datepicker', vuejsDatepicker);
+
+      new Vue({
+        el: "#app",
+        data: {
+          vignettes: [
+            { country: "Austria", vehicle: "Car", period: "Two months", price: 30 },
+            { country: "Austria", vehicle: "Car", period: "Ten days", price: 10 },
+            { country: "Austria", vehicle: "Bus", period: "Two months", price: 50 },
+            { country: "Austria", vehicle: "Bus", period: "Ten days", price: 20 },
+            { country: "Hungary", vehicle: "Car", period: "Monthly", price: 25 },
+            { country: "Hungary", vehicle: "Car", period: "Weekly", price: 15 },
+            { country: "Hungary", vehicle: "Bus", period: "Monthly", price: 45 },
+            { country: "Hungary", vehicle: "Bus", period: "Weekly", price: 25 },
+            { country: "Romania", vehicle: "Car", period: "Monthly", price: 20 },
+            { country: "Romania", vehicle: "Car", period: "Weekly", price: 12 },
+            { country: "Romania", vehicle: "Bus", period: "Monthly", price: 40 },
+            { country: "Romania", vehicle: "Bus", period: "Weekly", price: 22 },
+            { country: "Bulgaria", vehicle: "Car", period: "Monthly", price: 18 },
+            { country: "Bulgaria", vehicle: "Car", period: "Weekly", price: 10 },
+            { country: "Bulgaria", vehicle: "Bus", period: "Monthly", price: 35 },
+            { country: "Bulgaria", vehicle: "Bus", period: "Weekly", price: 20 },
+          ],
+          orders: [],
+          sortKey: 'country',
+          sortOrder: 1,
+          lastReferenceNumber: '',
+          startDate: new Date(),
+          percentageIncrease: 0, 
+          secretKey: 0 
+        },
+        created() {
+          this.fetchConfig();
+        },
+        computed: {
+          sortedVignettes() {
+            return this.vignettes.sort((a, b) => {
+              if (a[this.sortKey] > b[this.sortKey]) {
+                return 1 * this.sortOrder;
+              } else if (a[this.sortKey] < b[this.sortKey]) {
+                return -1 * this.sortOrder;
+              } else {
+                return 0;
+              }
+            });
+          },
+          totalPrice() {
+            return this.orders.reduce((total, order) => total + order.price, 0);
+          },
+          adjustedTotalPrice() {
+            return this.totalPrice;
+          },
+          formattedStartDate() {
+            return this.startDate.toLocaleDateString();
+          }
+        },
+        methods: {
+          fetchConfig() {
+            fetch('config/config.json')
+              .then(response => response.json())
+              .then(data => {
+                this.percentageIncrease = data.percentageIncrease;
+                this.secretKey = data.secretKey;
+                this.adjustPrices();
+              });
+          },
+          adjustPrices() {
+            const hashedPercentage = this.simpleHash(this.percentageIncrease.toString(), this.secretKey);
+            this.vignettes.forEach(vignette => {
+              vignette.price *= (1 + hashedPercentage / 100);
+            });
+          },
+          simpleHash(str, secret) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+              hash = (hash << 5) - hash + str.charCodeAt(i) + secret;
+              hash |= 0;
+            }
+            return Math.abs(hash % 100); 
+          },
+          sortBy(key) {
+            if (this.sortKey === key) {
+              this.sortOrder *= -1;
+            } else {
+              this.sortOrder = 1;
+            }
+            this.sortKey = key;
+          },
+          getRowClass(vignette) {
+            if (vignette.vehicle === "Car") {
+              return vignette.period.includes("month")
+                ? "bg-primary text-white"
+                : "bg-info text-white";
+            } else {
+              return vignette.period.includes("month")
+                ? "bg-warning text-dark"
+                : "bg-danger text-white";
+            }
+          },
+          toggleOrder(vignette) {
+            const index = this.orders.findIndex(
+              (order) =>
+                order.country === vignette.country &&
+                order.vehicle === vignette.vehicle &&
+                order.period === vignette.period
+            );
+            if (index === -1) {
+              const orderId = this.generateOrderId();
+              this.orders.push({ ...vignette, id: orderId });
+              this.lastReferenceNumber = orderId;
+            }
+          },
+          removeOrder(order) {
+            const index = this.orders.findIndex((o) => o.id === order.id);
+            if (index !== -1) {
+              this.orders.splice(index, 1);
+              this.lastReferenceNumber = this.orders.length
+                ? this.orders[this.orders.length - 1].id
+                : '';
+            }
+          },
+          generateOrderId() {
+            return Math.random().toString().substring(2, 14);
+          },
+          getFlag(country) {
+            const flags = {
+              Austria: "https://flagcdn.com/w40/at.png",
+              Hungary: "https://flagcdn.com/w40/hu.png",
+              Romania: "https://flagcdn.com/w40/ro.png",
+              Bulgaria: "https://flagcdn.com/w40/bg.png",
+            };
+            return flags[country] || "";
+          },
+          isSelected(vignette) {
+            return this.orders.some(
+              (order) =>
+                order.country === vignette.country &&
+                order.vehicle === vignette.vehicle &&
+                order.period === vignette.period
+            );
+          },
+          showModal() {
+            $('#orderModal').modal('show');
+          },
+          updateStartDate(date) {
+            this.startDate = date;
+          }
+        },
+      });
+    </script>
+    
+  </body>
+</html>
