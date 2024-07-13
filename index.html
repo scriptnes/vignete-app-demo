@@ -5,6 +5,7 @@
     <title>Vignette App</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="https://unpkg.com/vue-i18n@8/dist/vue-i18n.js"></script>
     <script src="https://unpkg.com/vuejs-datepicker"></script>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -14,40 +15,46 @@
   </head>
   <body>
     <div id="app" class="container mt-5">
-      <h1 class="mb-4">Vignette App</h1>
-
+      <!-- Add a language switcher -->
+      <div class="mb-3">
+        <label for="languageSwitcher">Language:</label>
+        <select id="languageSwitcher" v-model="currentLanguage" @change="switchLanguage">
+          <option value="en">English</option>
+          <option value="bg">Bulgarian</option>
+        </select>
+      </div>
+      <h1 class="mb-4">{{ $t('appTitle') }}</h1>
       <div v-if="loading" class="spinner-border text-primary" role="status">
         <span class="sr-only">Loading...</span>
       </div>
-
       <div v-else>
         <div class="table-responsive">
           <table class="table table-bordered">
             <thead>
               <tr>
                 <th @click="sortBy('country')">
-                  Country
+                  {{ $t('country') }}
                   <span v-if="sortKey === 'country'">
                     <span v-if="sortOrder === 1">▲</span>
                     <span v-else>▼</span>
                   </span>
                 </th>
                 <th @click="sortBy('vehicle')">
-                  Vehicle Type
+                  {{ $t('vehicleType') }}
                   <span v-if="sortKey === 'vehicle'">
                     <span v-if="sortOrder === 1">▲</span>
                     <span v-else>▼</span>
                   </span>
                 </th>
                 <th @click="sortBy('period')">
-                  Period
+                  {{ $t('period') }}
                   <span v-if="sortKey === 'period'">
                     <span v-if="sortOrder === 1">▲</span>
                     <span v-else>▼</span>
                   </span>
                 </th>
                 <th @click="sortBy('price')">
-                  Price
+                  {{ $t('price') }}
                   <span v-if="sortKey === 'price'">
                     <span v-if="sortOrder === 1">▲</span>
                     <span v-else>▼</span>
@@ -74,10 +81,10 @@
             </tbody>
           </table>
         </div>
-        <h2 class="mt-4">Order List</h2>
+        <h2 class="mt-4">{{ $t('orderList') }}</h2>
         <div class="card mb-3" v-if="orders.length">
           <div class="card-body">
-            <h5 class="card-title">Orders</h5>
+            <h5 class="card-title">{{ $t('orders') }}</h5>
             <ul class="list-group">
               <li
                 class="list-group-item d-flex justify-content-between align-items-center"
@@ -92,17 +99,16 @@
           </div>
         </div>
         <div class="alert alert-info" v-if="orders.length">
-          <strong>Total Price: {{ totalPrice.toFixed(2) }} €</strong>
+          <strong>{{ $t('totalPrice') }}: {{ totalPrice.toFixed(2) }} €</strong>
         </div>
         <div class="alert alert-secondary">
           <strong
-            >Reference Number: <span @click="showModal" style="cursor: pointer">{{ lastReferenceNumber }}</span></strong
+            >{{ $t('referenceNumber') }}: <span @click="showModal" style="cursor: pointer">{{ lastReferenceNumber }}</span></strong
           >
         </div>
-        
         <div class="row mb-3 align-items-center">
           <div class="col-md-6">
-            <h5>Select Start Date</h5>
+            <h5>{{ $t('selectStartDate') }}</h5>
             <vuejs-datepicker
               :value="startDate"
               @input="updateStartDate"
@@ -111,19 +117,18 @@
             ></vuejs-datepicker>
           </div>
           <div class="col-md-6 text-right">
-            <button class="btn btn-primary mt-3" @click="showModal" :disabled="!orders.length">Review Order</button>
+            <button class="btn btn-primary mt-3" @click="showModal" :disabled="!orders.length">{{ $t('reviewOrder') }}</button>
           </div>
         </div>
-
         <!-- Modal -->
         <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalLabel" aria-hidden="true">
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
                 <div>
-                  <h5 class="modal-title" id="orderModalLabel">Order Details</h5>
+                  <h5 class="modal-title" id="orderModalLabel">{{ $t('orderDetails') }}</h5>
                   <small class="text-muted"
-                    >Reference Number: <span class="reference-number">{{ lastReferenceNumber }}</span></small
+                    >{{ $t('referenceNumber') }}: <span class="reference-number">{{ lastReferenceNumber }}</span></small
                   >
                 </div>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -133,7 +138,7 @@
               <div class="modal-body">
                 <div class="card mb-3">
                   <div class="card-body">
-                    <h5 class="card-title">Orders</h5>
+                    <h5 class="card-title">{{ $t('orders') }}</h5>
                     <ul class="list-group">
                       <li
                         class="list-group-item d-flex justify-content-between align-items-center"
@@ -147,10 +152,10 @@
                   </div>
                 </div>
                 <div class="alert alert-info">
-                  <strong>Total Price: {{ totalPrice.toFixed(2) }} €</strong>
+                  <strong>{{ $t('totalPrice') }}: {{ totalPrice.toFixed(2) }} €</strong>
                 </div>
                 <div class="alert alert-secondary">
-                  <strong>Start Date: {{ formattedStartDate }}</strong>
+                  <strong>{{ $t('startDate') }}: {{ formattedStartDate }}</strong>
                 </div>
               </div>
             </div>
@@ -161,8 +166,18 @@
     <script>
       Vue.component("vuejs-datepicker", vuejsDatepicker);
 
+      const i18n = new VueI18n({
+        locale: 'en', // set locale
+        fallbackLocale: 'en', // set fallback locale
+        messages: {
+          en: fetch('path_to_en.json').then(response => response.json()),
+          bg: fetch('path_to_bg.json').then(response => response.json())
+        }
+      });
+
       new Vue({
         el: "#app",
+        i18n,
         data: {
           vignettes: [],
           orders: [],
@@ -172,6 +187,7 @@
           startDate: new Date(),
           percentageIncrease: 0,
           loading: true,
+          currentLanguage: 'en' // default language
         },
         created() {
           this.fetchConfig();
@@ -293,6 +309,9 @@
           updateStartDate(date) {
             this.startDate = date;
           },
+          switchLanguage() {
+            this.$i18n.locale = this.currentLanguage;
+          }
         },
       });
     </script>
