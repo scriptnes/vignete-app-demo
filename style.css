@@ -47,3 +47,17 @@
       width: 100%;
     }
   }
+
+  .datepicker-popup {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    z-index: 1000;
+  }
+  .table-responsive {
+    overflow-x: auto;
+  }
+  .spinner-border {
+    display: block;
+    margin: 100px auto;
+  }
