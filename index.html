@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <title>Vignette App</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,343 +12,340 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="./style.css" />
-  </head>
-  <body>
+</head>
+<body>
     <div id="app" class="container mt-5">
-      <div v-if="languageLoading" class="spinner-border text-primary" role="status">
-        <span class="sr-only">Loading...</span>
-      </div>
-      <div v-else>
-        <div class="mb-3">
-          <label for="languageSwitcher">Language:</label>
-          <select id="languageSwitcher" v-model="currentLanguage" @change="switchLanguage">
-            <option value="en">English</option>
-            <option value="bg">Bulgarian</option>
-            <option value="de">German</option>
-          </select>
+        <div v-if="languageLoading" class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
         </div>
-        <h1 class="mb-4">{{ $t('appTitle') }}</h1>
-
-        <div v-if="loading" class="spinner-border text-primary" role="status">
-          <span class="sr-only">Loading...</span>
-        </div>
-
         <div v-else>
-          <div class="table-responsive">
-            <table class="table table-bordered">
-              <thead>
-                <tr>
-                  <th @click="sortBy('country')">
-                    {{ $t('country') }}
-                    <span v-if="sortKey === 'country'">
-                      <span v-if="sortOrder === 1">▲</span>
-                      <span v-else>▼</span>
-                    </span>
-                  </th>
-                  <th @click="sortBy('vehicle')">
-                    {{ $t('vehicleType') }}
-                    <span v-if="sortKey === 'vehicle'">
-                      <span v-if="sortOrder === 1">▲</span>
-                      <span v-else>▼</span>
-                    </span>
-                  </th>
-                  <th @click="sortBy('period')">
-                    {{ $t('period') }}
-                    <span v-if="sortKey === 'period'">
-                      <span v-if="sortOrder === 1">▲</span>
-                      <span v-else>▼</span>
-                    </span>
-                  </th>
-                  <th @click="sortBy('price')">
-                    {{ $t('price') }}
-                    <span v-if="sortKey === 'price'">
-                      <span v-if="sortOrder === 1">▲</span>
-                      <span v-else>▼</span>
-                    </span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  v-for="(vignette, index) in sortedVignettes"
-                  :key="index"
-                  :class="getRowClass(vignette)"
-                  @click="toggleOrder(vignette)"
-                  v-show="!isSelected(vignette)"
-                >
-                  <td>
-                    <img :src="getFlag(vignette.country)" alt="" class="flag-icon" />
-                    {{ translateContent('countries', vignette.country) }}
-                  </td>
-                  <td>{{ translateContent('vehicleTypes', vignette.vehicle) }}</td>
-                  <td>{{ translateContent('periods', vignette.period) }}</td>
-                  <td>{{ vignette.price.toFixed(2) }} €</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <h2 class="mt-4">{{ $t('orderList') }}</h2>
-          <div class="card mb-3" v-if="orders.length">
-            <div class="card-body">
-              <h5 class="card-title">{{ $t('orders') }}</h5>
-              <ul class="list-group">
-                <li
-                  class="list-group-item d-flex justify-content-between align-items-center"
-                  v-for="(order, index) in orders"
-                  :key="order.id"
-                  @click="removeOrder(order)"
-                >
-                  {{ translateContent('countries', order.country) }} - {{ translateContent('vehicleTypes',
-                  order.vehicle) }} - {{ translateContent('periods', order.period) }}
-                  <span class="badge badge-primary badge-pill">{{ order.price.toFixed(2) }} €</span>
-                </li>
-              </ul>
+            <div class="language-switcher mb-3">
+                <label for="languageSwitcher">{{ $t('selectLanguage') }}</label>
+                <select id="languageSwitcher" class="form-control" v-model="currentLanguage" @change="switchLanguage">
+                    <option value="en">English</option>
+                    <option value="bg">Bulgarian</option>
+                    <option value="de">German</option>
+                </select>
             </div>
-          </div>
-          <div class="alert alert-info" v-if="orders.length">
-            <strong>{{ $t('totalPrice') }}: {{ totalPrice.toFixed(2) }} €</strong>
-          </div>
-          <div class="alert alert-secondary">
-            <strong
-              >{{ $t('referenceNumber') }}:
-              <span @click="showModal" style="cursor: pointer">{{ lastReferenceNumber }}</span></strong
-            >
-          </div>
+            <h1 class="mb-4">{{ $t('appTitle') }}</h1>
 
-          <div class="row mb-3 align-items-center">
-            <div class="col-md-6">
-              <h5>{{ $t('selectStartDate') }}</h5>
-              <vuejs-datepicker
-                :value="startDate"
-                @input="updateStartDate"
-                :disabled-dates="disabledDates"
-                calendar-class="datepicker-popup"
-              ></vuejs-datepicker>
+            <div v-if="loading" class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
             </div>
-            <div class="col-md-6 text-right">
-              <button class="btn btn-primary mt-3" @click="showModal" :disabled="!orders.length">
-                {{ $t('reviewOrder') }}
-              </button>
-            </div>
-          </div>
 
-          <!-- Modal -->
-          <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <div>
-                    <h5 class="modal-title" id="orderModalLabel">{{ $t('orderDetails') }}</h5>
-                    <small class="text-muted"
-                      >{{ $t('referenceNumber') }}:
-                      <span class="reference-number">{{ lastReferenceNumber }}</span></small
-                    >
-                  </div>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
+            <div v-else>
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th @click="sortBy('country')">
+                                    {{ $t('country') }}
+                                    <span v-if="sortKey === 'country'">
+                                        <span v-if="sortOrder === 1">▲</span>
+                                        <span v-else>▼</span>
+                                    </span>
+                                </th>
+                                <th @click="sortBy('vehicle')">
+                                    {{ $t('vehicleType') }}
+                                    <span v-if="sortKey === 'vehicle'">
+                                        <span v-if="sortOrder === 1">▲</span>
+                                        <span v-else>▼</span>
+                                    </span>
+                                </th>
+                                <th @click="sortBy('period')">
+                                    {{ $t('period') }}
+                                    <span v-if="sortKey === 'period'">
+                                        <span v-if="sortOrder === 1">▲</span>
+                                        <span v-else>▼</span>
+                                    </span>
+                                </th>
+                                <th @click="sortBy('price')">
+                                    {{ $t('price') }}
+                                    <span v-if="sortKey === 'price'">
+                                        <span v-if="sortOrder === 1">▲</span>
+                                        <span v-else>▼</span>
+                                    </span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                v-for="(vignette, index) in sortedVignettes"
+                                :key="index"
+                                :class="getRowClass(vignette)"
+                                @click="toggleOrder(vignette)"
+                                v-show="!isSelected(vignette)"
+                            >
+                                <td>
+                                    <img :src="getFlag(vignette.country)" alt="" class="flag-icon" />
+                                    {{ translateContent('countries', vignette.country) }}
+                                </td>
+                                <td>{{ translateContent('vehicleTypes', vignette.vehicle) }}</td>
+                                <td>{{ translateContent('periods', vignette.period) }}</td>
+                                <td>{{ vignette.price.toFixed(2) }} €</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <div class="modal-body">
-                  <div class="card mb-3">
+                <h2 class="mt-4">{{ $t('orderList') }}</h2>
+                <div class="card mb-3" v-if="orders.length">
                     <div class="card-body">
-                      <h5 class="card-title">{{ $t('orders') }}</h5>
-                      <ul class="list-group">
-                        <li
-                          class="list-group-item d-flex justify-content-between align-items-center"
-                          v-for="(order, index) in orders"
-                          :key="order.id"
-                        >
-                          {{ translateContent('countries', order.country) }} - {{ translateContent('vehicleTypes',
-                          order.vehicle) }} - {{ translateContent('periods', order.period) }}
-                          <span class="badge badge-primary badge-pill">{{ order.price.toFixed(2) }} €</span>
-                        </li>
-                      </ul>
+                        <h5 class="card-title">{{ $t('orders') }}</h5>
+                        <ul class="list-group">
+                            <li
+                                class="list-group-item d-flex justify-content-between align-items-center"
+                                v-for="(order, index) in orders"
+                                :key="order.id"
+                                @click="removeOrder(order)"
+                            >
+                                {{ translateContent('countries', order.country) }} - {{ translateContent('vehicleTypes', order.vehicle) }} - {{ translateContent('periods', order.period) }}
+                                <span class="badge badge-primary badge-pill">{{ order.price.toFixed(2) }} €</span>
+                            </li>
+                        </ul>
                     </div>
-                  </div>
-                  <div class="alert alert-info">
-                    <strong>{{ $t('totalPrice') }}: {{ totalPrice.toFixed(2) }} €</strong>
-                  </div>
-                  <div class="alert alert-secondary">
-                    <strong>{{ $t('startDate') }}: {{ formattedStartDate }}</strong>
-                  </div>
                 </div>
-              </div>
+                <div class="alert alert-info" v-if="orders.length">
+                    <strong>{{ $t('totalPrice') }}: {{ totalPrice.toFixed(2) }} €</strong>
+                </div>
+                <div class="alert alert-secondary">
+                    <strong>
+                        {{ $t('referenceNumber') }}:
+                        <span @click="showModal" style="cursor: pointer">{{ lastReferenceNumber }}</span>
+                    </strong>
+                </div>
+
+                <div class="row mb-3 align-items-center">
+                    <div class="col-md-6">
+                        <h5>{{ $t('selectStartDate') }}</h5>
+                        <vuejs-datepicker
+                            :value="startDate"
+                            @input="updateStartDate"
+                            :disabled-dates="disabledDates"
+                            calendar-class="datepicker-popup"
+                        ></vuejs-datepicker>
+                    </div>
+                    <div class="col-md-6 text-right">
+                        <button class="btn btn-primary mt-3" @click="showModal" :disabled="!orders.length">
+                            {{ $t('reviewOrder') }}
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Modal -->
+                <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <div>
+                                    <h5 class="modal-title" id="orderModalLabel">{{ $t('orderDetails') }}</h5>
+                                    <small class="text-muted">{{ $t('referenceNumber') }}:
+                                        <span class="reference-number">{{ lastReferenceNumber }}</span>
+                                    </small>
+                                </div>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ $t('orders') }}</h5>
+                                        <ul class="list-group">
+                                            <li
+                                                class="list-group-item d-flex justify-content-between align-items-center"
+                                                v-for="(order, index) in orders"
+                                                :key="order.id"
+                                            >
+                                                {{ translateContent('countries', order.country) }} - {{ translateContent('vehicleTypes', order.vehicle) }} - {{ translateContent('periods', order.period) }}
+                                                <span class="badge badge-primary badge-pill">{{ order.price.toFixed(2) }} €</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="alert alert-info">
+                                    <strong>{{ $t('totalPrice') }}: {{ totalPrice.toFixed(2) }} €</strong>
+                                </div>
+                                <div class="alert alert-secondary">
+                                    <strong>{{ $t('startDate') }}: {{ formattedStartDate }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
     </div>
     <script>
-      Vue.component("vuejs-datepicker", vuejsDatepicker);
+        Vue.component("vuejs-datepicker", vuejsDatepicker);
 
-      new Vue({
-        el: "#app",
-        data: {
-          vignettes: [],
-          orders: [],
-          sortKey: "country",
-          sortOrder: 1,
-          lastReferenceNumber: "",
-          startDate: new Date(),
-          percentageIncrease: 0,
-          loading: true,
-          languageLoading: true,
-          currentLanguage: "en",
-          vehicleTypeMap: {
-            "Bus <= 3.5t": "Bus_le_3_5t",
-          },
-        },
-        async created() {
-          await this.loadMessages();
-          this.fetchConfig();
-          this.fetchVignettes();
-        },
-        computed: {
-          sortedVignettes() {
-            return this.vignettes.sort((a, b) => {
-              if (a[this.sortKey] > b[this.sortKey]) {
-                return 1 * this.sortOrder;
-              } else if (a[this.sortKey] < b[this.sortKey]) {
-                return -1 * this.sortOrder;
-              } else {
-                return 0;
-              }
-            });
-          },
-          totalPrice() {
-            return this.orders.reduce((total, order) => total + order.price, 0);
-          },
-          adjustedTotalPrice() {
-            return this.totalPrice;
-          },
-          formattedStartDate() {
-            return this.startDate.toLocaleDateString();
-          },
-          disabledDates() {
-            const today = new Date();
-            return {
-              to: today,
-            };
-          },
-        },
-        methods: {
-          async loadMessages() {
-            const en = await fetch("data/en.json").then((response) => response.json());
-            const bg = await fetch("data/bg.json").then((response) => response.json());
-            const de = await fetch("data/de.json").then((response) => response.json());
-            const messages = { en, bg, de };
-            this.$i18n.setLocaleMessage("en", messages.en);
-            this.$i18n.setLocaleMessage("bg", messages.bg);
-            this.$i18n.setLocaleMessage("de", messages.de);
-            this.languageLoading = false;
-          },
-          fetchConfig() {
-            fetch("config/config.json")
-              .then((response) => response.json())
-              .then((data) => {
-                this.percentageIncrease = data.percentageIncrease;
-                this.adjustPrices();
-              });
-          },
-          fetchVignettes() {
-            fetch("data/vignettes.json")
-              .then((response) => response.json())
-              .then((data) => {
-                this.vignettes = data;
-                this.adjustPrices();
-                this.loading = false;
-              });
-          },
-          adjustPrices() {
-            const percentageIncrease = Number(this.percentageIncrease);
+        new Vue({
+            el: "#app",
+            data: {
+                vignettes: [],
+                orders: [],
+                sortKey: "country",
+                sortOrder: 1,
+                lastReferenceNumber: "",
+                startDate: new Date(),
+                percentageIncrease: 0,
+                loading: true,
+                languageLoading: true,
+                currentLanguage: "en",
+                vehicleTypeMap: {
+                    "Bus <= 3.5t": "Bus_le_3_5t",
+                },
+            },
+            async created() {
+                await this.loadMessages();
+                this.fetchConfig();
+                this.fetchVignettes();
+            },
+            computed: {
+                sortedVignettes() {
+                    return this.vignettes.sort((a, b) => {
+                        if (a[this.sortKey] > b[this.sortKey]) {
+                            return 1 * this.sortOrder;
+                        } else if (a[this.sortKey] < b[this.sortKey]) {
+                            return -1 * this.sortOrder;
+                        } else {
+                            return 0;
+                        }
+                    });
+                },
+                totalPrice() {
+                    return this.orders.reduce((total, order) => total + order.price, 0);
+                },
+                adjustedTotalPrice() {
+                    return this.totalPrice;
+                },
+                formattedStartDate() {
+                    return this.startDate.toLocaleDateString();
+                },
+                disabledDates() {
+                    const today = new Date();
+                    return {
+                        to: today,
+                    };
+                },
+            },
+            methods: {
+                async loadMessages() {
+                    const en = await fetch("data/en.json").then((response) => response.json());
+                    const bg = await fetch("data/bg.json").then((response) => response.json());
+                    const de = await fetch("data/de.json").then((response) => response.json());
+                    const messages = { en, bg, de };
+                    this.$i18n.setLocaleMessage("en", messages.en);
+                    this.$i18n.setLocaleMessage("bg", messages.bg);
+                    this.$i18n.setLocaleMessage("de", messages.de);
+                    this.languageLoading = false;
+                },
+                fetchConfig() {
+                    fetch("config/config.json")
+                        .then((response) => response.json())
+                        .then((data) => {
+                            this.percentageIncrease = data.percentageIncrease;
+                            this.adjustPrices();
+                        });
+                },
+                fetchVignettes() {
+                    fetch("data/vignettes.json")
+                        .then((response) => response.json())
+                        .then((data) => {
+                            this.vignettes = data;
+                            this.adjustPrices();
+                            this.loading = false;
+                        });
+                },
+                adjustPrices() {
+                    const percentageIncrease = Number(this.percentageIncrease);
 
-            this.vignettes.forEach((vignette) => {
-              vignette.price *= 1 + percentageIncrease / 100;
-            });
-          },
-          sortBy(key) {
-            if (this.sortKey === key) {
-              this.sortOrder *= -1;
-            } else {
-              this.sortOrder = 1;
-            }
-            this.sortKey = key;
-          },
-          getRowClass(vignette) {
-            const countryColors = {
-              Austria: "bg-primary text-white",
-              Hungary: "bg-info text-white",
-              Romania: "bg-warning text-dark",
-              Bulgaria: "bg-danger text-white",
-            };
-            return countryColors[vignette.country] || "";
-          },
-          toggleOrder(vignette) {
-            const index = this.orders.findIndex(
-              (order) =>
-                order.country === vignette.country &&
-                order.vehicle === vignette.vehicle &&
-                order.period === vignette.period
-            );
-            if (index === -1) {
-              const orderId = this.generateOrderId();
-              this.orders.push({ ...vignette, id: orderId });
-              this.lastReferenceNumber = orderId;
-            }
-          },
-          removeOrder(order) {
-            const index = this.orders.findIndex((o) => o.id === order.id);
-            if (index !== -1) {
-              this.orders.splice(index, 1);
-              this.lastReferenceNumber = this.generateOrderId();
-            }
-          },
-          generateOrderId() {
-            return Math.random().toString().substring(2, 14);
-          },
-          getFlag(country) {
-            const flags = {
-              Austria: "https://flagcdn.com/w40/at.png",
-              Hungary: "https://flagcdn.com/w40/hu.png",
-              Romania: "https://flagcdn.com/w40/ro.png",
-              Bulgaria: "https://flagcdn.com/w40/bg.png",
-            };
-            return flags[country] || "";
-          },
-          isSelected(vignette) {
-            return this.orders.some(
-              (order) =>
-                order.country === vignette.country &&
-                order.vehicle === vignette.vehicle &&
-                order.period === vignette.period
-            );
-          },
-          showModal() {
-            $("#orderModal").modal("show");
-          },
-          updateStartDate(date) {
-            this.startDate = date;
-          },
-          switchLanguage() {
-            this.$i18n.locale = this.currentLanguage;
-          },
-          translateContent(category, value) {
-            if (category === "vehicleTypes" && this.vehicleTypeMap[value]) {
-              value = this.vehicleTypeMap[value];
-            }
-            return this.$t(`${category}.${value}`);
-          },
-        },
-        i18n: new VueI18n({
-          locale: "en",
-          fallbackLocale: "en",
-          messages: {
-            en: {},
-            bg: {},
-            de: {},
-          },
-        }),
-      });
+                    this.vignettes.forEach((vignette) => {
+                        vignette.price *= 1 + percentageIncrease / 100;
+                    });
+                },
+                sortBy(key) {
+                    if (this.sortKey === key) {
+                        this.sortOrder *= -1;
+                    } else {
+                        this.sortOrder = 1;
+                    }
+                    this.sortKey = key;
+                },
+                getRowClass(vignette) {
+                    const countryColors = {
+                        Austria: "bg-primary text-white",
+                        Hungary: "bg-info text-white",
+                        Romania: "bg-warning text-dark",
+                        Bulgaria: "bg-danger text-white",
+                    };
+                    return countryColors[vignette.country] || "";
+                },
+                toggleOrder(vignette) {
+                    const index = this.orders.findIndex(
+                        (order) =>
+                            order.country === vignette.country &&
+                            order.vehicle === vignette.vehicle &&
+                            order.period === vignette.period
+                    );
+                    if (index === -1) {
+                        const orderId = this.generateOrderId();
+                        this.orders.push({ ...vignette, id: orderId });
+                        this.lastReferenceNumber = orderId;
+                    }
+                },
+                removeOrder(order) {
+                    const index = this.orders.findIndex((o) => o.id === order.id);
+                    if (index !== -1) {
+                        this.orders.splice(index, 1);
+                        this.lastReferenceNumber = this.generateOrderId();
+                    }
+                },
+                generateOrderId() {
+                    return Math.random().toString().substring(2, 14);
+                },
+                getFlag(country) {
+                    const flags = {
+                        Austria: "https://flagcdn.com/w40/at.png",
+                        Hungary: "https://flagcdn.com/w40/hu.png",
+                        Romania: "https://flagcdn.com/w40/ro.png",
+                        Bulgaria: "https://flagcdn.com/w40/bg.png",
+                    };
+                    return flags[country] || "";
+                },
+                isSelected(vignette) {
+                    return this.orders.some(
+                        (order) =>
+                            order.country === vignette.country &&
+                            order.vehicle === vignette.vehicle &&
+                            order.period === vignette.period
+                    );
+                },
+                showModal() {
+                    $("#orderModal").modal("show");
+                },
+                updateStartDate(date) {
+                    this.startDate = date;
+                },
+                switchLanguage() {
+                    this.$i18n.locale = this.currentLanguage;
+                },
+                translateContent(category, value) {
+                    if (category === "vehicleTypes" && this.vehicleTypeMap[value]) {
+                        value = this.vehicleTypeMap[value];
+                    }
+                    return this.$t(`${category}.${value}`);
+                },
+            },
+            i18n: new VueI18n({
+                locale: "en",
+                fallbackLocale: "en",
+                messages: {
+                    en: {},
+                    bg: {},
+                    de: {},
+                },
+            }),
+        });
     </script>
-  </body>
+</body>
 </html>

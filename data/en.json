@@ -1,5 +1,6 @@
 {
     "appTitle": "Vignette App",
+    "selectLanguage": "Select Language",
     "country": "Country",
     "vehicleType": "Vehicle Type",
     "period": "Period",

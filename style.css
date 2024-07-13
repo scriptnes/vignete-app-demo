@@ -62,4 +62,15 @@
     margin: 100px auto;
   }
 
-  
+  .language-switcher {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+.language-switcher label {
+    margin-bottom: 0;
+    margin-right: 10px;
+}
+.language-switcher select {
+    width: auto;
+}
