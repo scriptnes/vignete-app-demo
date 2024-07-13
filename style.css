@@ -32,3 +32,18 @@
   .card {
     margin: 10px;
   }
+  /* Custom Media Queries for Responsive Design */
+  @media (max-width: 767px) {
+    .table-responsive {
+      overflow-x: auto;
+    }
+    .card-body h5, .card-body p, .card-body ul {
+      text-align: center;
+    }
+    .d-flex {
+      flex-direction: column;
+    }
+    .btn {
+      width: 100%;
+    }
+  }

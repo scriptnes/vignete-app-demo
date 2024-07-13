@@ -17,57 +17,59 @@
   <body>
     <div id="app" class="container mt-5">
       <h1 class="mb-4">Vignette App</h1>
-      <table class="table table-bordered">
-        <thead>
-          <tr>
-            <th @click="sortBy('country')">
-              Country
-              <span v-if="sortKey === 'country'">
-                <span v-if="sortOrder === 1">▲</span>
-                <span v-else>▼</span>
-              </span>
-            </th>
-            <th @click="sortBy('vehicle')">
-              Vehicle Type
-              <span v-if="sortKey === 'vehicle'">
-                <span v-if="sortOrder === 1">▲</span>
-                <span v-else>▼</span>
-              </span>
-            </th>
-            <th @click="sortBy('period')">
-              Period
-              <span v-if="sortKey === 'period'">
-                <span v-if="sortOrder === 1">▲</span>
-                <span v-else>▼</span>
-              </span>
-            </th>
-            <th @click="sortBy('price')">
-              Price
-              <span v-if="sortKey === 'price'">
-                <span v-if="sortOrder === 1">▲</span>
-                <span v-else>▼</span>
-              </span>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="(vignette, index) in sortedVignettes"
-            :key="index"
-            :class="getRowClass(vignette)"
-            @click="toggleOrder(vignette)"
-            v-show="!isSelected(vignette)"
-          >
-            <td>
-              <img :src="getFlag(vignette.country)" alt="" class="flag-icon" />
-              {{ vignette.country }}
-            </td>
-            <td>{{ vignette.vehicle }}</td>
-            <td>{{ vignette.period }}</td>
-            <td>{{ vignette.price.toFixed(2) }} €</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th @click="sortBy('country')">
+                Country
+                <span v-if="sortKey === 'country'">
+                  <span v-if="sortOrder === 1">▲</span>
+                  <span v-else>▼</span>
+                </span>
+              </th>
+              <th @click="sortBy('vehicle')">
+                Vehicle Type
+                <span v-if="sortKey === 'vehicle'">
+                  <span v-if="sortOrder === 1">▲</span>
+                  <span v-else>▼</span>
+                </span>
+              </th>
+              <th @click="sortBy('period')">
+                Period
+                <span v-if="sortKey === 'period'">
+                  <span v-if="sortOrder === 1">▲</span>
+                  <span v-else>▼</span>
+                </span>
+              </th>
+              <th @click="sortBy('price')">
+                Price
+                <span v-if="sortKey === 'price'">
+                  <span v-if="sortOrder === 1">▲</span>
+                  <span v-else>▼</span>
+                </span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="(vignette, index) in sortedVignettes"
+              :key="index"
+              :class="getRowClass(vignette)"
+              @click="toggleOrder(vignette)"
+              v-show="!isSelected(vignette)"
+            >
+              <td>
+                <img :src="getFlag(vignette.country)" alt="" class="flag-icon" />
+                {{ vignette.country }}
+              </td>
+              <td>{{ vignette.vehicle }}</td>
+              <td>{{ vignette.period }}</td>
+              <td>{{ vignette.price.toFixed(2) }} €</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <h2 class="mt-4">Order List</h2>
       <div class="card mb-3" v-if="orders.length">
         <div class="card-body">
